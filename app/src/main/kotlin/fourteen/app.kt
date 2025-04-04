@@ -10,10 +10,9 @@ data class Coordinate(var x: Int, var y: Int)
 data class Robot(val pos: Coordinate, val velocity: Coordinate)
 
 val robots: MutableList<Robot> = mutableListOf()
+val grid = Array(103) { CharArray(101) { '0' } }
+var part2Seconds = 0
 fun main(){
-
-    val grid = Array(103) { CharArray(101) { '0' } }
-
     for (line in lines){
         val values = line
             .filterNot { it == 'p' || it == '=' }
@@ -25,29 +24,8 @@ fun main(){
     for (robots in robots){
         grid[robots.pos.y][robots.pos.x] ++
     }
-    fun moveRobots(n: Int){
-        val height = grid.size
-        val width = grid[0].size
 
-        repeat(n) {
-            for (robot in robots) {
-
-                grid[robot.pos.y][robot.pos.x]--
-
-                val newX = (robot.pos.x + robot.velocity.x + width) % width
-                val newY = (robot.pos.y + robot.velocity.y + height) % height
-
-                robot.pos.x = newX
-                robot.pos.y = newY
-
-                grid[newY][newX]++
-
-            }
-        }
-    }
-
-
-    moveRobots(100)
+    moveRobots(1000)
     var leftQuad = ""
     var rightQuad = ""
 
@@ -72,6 +50,64 @@ fun main(){
     val botlef = sumDigits(laf)
     val topright = sumDigits(ref)
     val botright = sumDigits(raf)
+    println("Part 1:")
     println(toplef * botlef * topright * botright)
+    println("Part 2:")
+    println(part2Seconds)
 }
 
+fun moveRobots(n: Int){
+
+    val height = grid.size
+    val width = grid[0].size
+
+    while(!checkOverlap(grid)) {
+
+        part2Seconds++
+
+        for (robot in robots) {
+
+            grid[robot.pos.y][robot.pos.x]--
+
+            val newX = (robot.pos.x + robot.velocity.x + width) % width
+            val newY = (robot.pos.y + robot.velocity.y + height) % height
+
+            robot.pos.x = newX
+            robot.pos.y = newY
+
+            grid[newY][newX]++
+        }
+    }
+}
+
+fun checkOverlap(grid: Array<CharArray>): Boolean {
+    for (row in grid) {
+        for (cell in row) {
+            if (cell > '1') {
+                return false
+            }
+        }
+    }
+    return true
+}
+
+
+fun part1(n: Int){
+
+    val height = grid.size
+    val width = grid[0].size
+
+    repeat(n) {
+        for (robot in robots) {
+            grid[robot.pos.y][robot.pos.x]--
+
+            val newX = (robot.pos.x + robot.velocity.x + width) % width
+            val newY = (robot.pos.y + robot.velocity.y + height) % height
+
+            robot.pos.x = newX
+            robot.pos.y = newY
+
+            grid[newY][newX]++
+        }
+    }
+}
